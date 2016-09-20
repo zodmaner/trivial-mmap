@@ -1,0 +1,4 @@
+*.md~
+*.lisp~
+*.asd~
+*.fasl
