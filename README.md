@@ -38,10 +38,10 @@ Evaluation took:
   65,952 bytes consed
 ````
 
-The little benchmark above was run on my laptop (a ThinkPad X230 with
-8 GB of RAM and an SSD). For comparison, reading the same file using
-`with-open-file` and `read-char` takes around 14 seconds of real time
-on the same machine.
+The little toy benchmark above was run on my laptop (an i5 ThinkPad
+X230 (Ivy Bridge) with 8 GB of RAM and an SSD). For comparison,
+reading the same file using `with-open-file` and `read-char` takes
+around 14 seconds of real time on the same machine.
 
 ## Dependency
 
@@ -50,6 +50,10 @@ on the same machine.
 ## Limitations
 
 * Currently, the library only supports reading data from memory-mapped files.
+
+## Author & Maintainer
+
+Smith Dhumbumroong <zodmaner@gmail.com>
 
 ## License
 
