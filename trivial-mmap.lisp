@@ -5,7 +5,7 @@
 ;;; "trivial-mmap" goes here. Hacks and glory await!
 
 (declaim (optimize speed)
-         (inline mmap-read-char))
+         (inline mmap-read-char mmap-read-byte))
 
 (defun mmap-file (filename &key length (mapping-type :map-private) (offset 0))
   "Maps a FILENAME into memory."
@@ -32,9 +32,14 @@ the POINTER-TO-MMAP-FILE pointer points to from memory."
   (osicat-posix:munmap pointer-to-mmap-file file-size))
 
 (defun mmap-read-char (pointer-to-mmap-file &key (offset 0))
-  "Returns a character from a memory-mapped file pointed to by the
-POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
+  "Reads and returns a character from a memory-mapped file pointed to
+by the POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
   (code-char (cffi:mem-aref (cffi:inc-pointer pointer-to-mmap-file offset) :char)))
+
+(defun mmap-read-byte (pointer-to-mmap-file &key (offset 0))
+  "Reads and returns one byte from a memory-mapped file pointed to by
+the POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
+  (cffi:mem-aref (cffi:inc-pointer pointer-to-mmap-file offset) :uint8))
 
 (defmacro with-mmap-file ((pointer-to-mmap-file
                            file-size filename &key length (mapping-type :map-private) (offset 0))

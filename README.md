@@ -10,6 +10,8 @@ The library exports the following symbols:
   memory
 * `mmap-read-char` a helper function that facilitates reading a
   character from a memory-mapped file
+* `mmap-read-byte` a helper function for reading one byte from a
+  memory-mapped file
 * `with-mmap-file` a helper macro that ensures that a memory-mapped
   file is safely unmapped (using `munmap-file` function) after we are
   done with it
