@@ -53,7 +53,7 @@ around 14 seconds of real time on the same machine.
 
 ## Author & Maintainer
 
-Smith Dhumbumroong <zodmaner@gmail.com>
+Smith Dhumbumroong (<zodmaner@gmail.com>)
 
 ## License
 
