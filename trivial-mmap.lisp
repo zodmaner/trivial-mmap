@@ -31,12 +31,12 @@
 the POINTER-TO-MMAP-FILE pointer points to from memory."
   (osicat-posix:munmap pointer-to-mmap-file file-size))
 
-(defun mmap-read-char (pointer-to-mmap-file &key (offset 0))
+(defun mmap-read-char (pointer-to-mmap-file offset)
   "Reads and returns a character from a memory-mapped file pointed to
 by the POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
   (code-char (cffi:mem-aref (cffi:inc-pointer pointer-to-mmap-file offset) :char)))
 
-(defun mmap-read-byte (pointer-to-mmap-file &key (offset 0))
+(defun mmap-read-byte (pointer-to-mmap-file offset)
   "Reads and returns one byte from a memory-mapped file pointed to by
 the POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
   (cffi:mem-aref (cffi:inc-pointer pointer-to-mmap-file offset) :uint8))

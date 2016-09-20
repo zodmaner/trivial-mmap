@@ -29,7 +29,7 @@ CL-USER> (time
           (trivial-mmap:with-mmap-file (ptr size "/home/zodmaner/twitter_rv_15066953.net")
             (loop
                :for offset :from 0 :to (1- size) :do
-               (characterp (trivial-mmap:mmap-read-char ptr :offset offset)))))
+               (characterp (trivial-mmap:mmap-read-char ptr offset)))))
 Evaluation took:
   3.400 seconds of real time
   3.400000 seconds of total run time (3.360000 user, 0.040000 system)
