@@ -7,55 +7,41 @@
 (declaim (optimize (speed 3))
          (inline mmap-read-byte mmap-read-char))
 
-(defun mmap-file (filename &key file-length (mapping-type :map-private) (offset 0))
-  "Maps a FILENAME into memory."
-  (let* ((open-flag osicat-posix:o-rdonly)
-         (memory-protection osicat-posix:prot-read)
-         (mapping-type-flag (case mapping-type
-                              (:map-private osicat-posix:map-private)
-                              (:map-shared osicat-posix:map-shared)))
-         (fd (osicat-posix:open filename open-flag)))
-    (unwind-protect
-         (let* ((fl (if file-length file-length (osicat-posix:stat-size (osicat-posix:fstat fd))))
-                (pointer-to-mmap-file (osicat-posix:mmap (cffi:null-pointer)
-                                                         fl
-                                                         memory-protection
-                                                         mapping-type-flag
-                                                         fd
-                                                         offset)))
-           (values pointer-to-mmap-file fl))
-      (osicat-posix:close fd))))
+(defstruct mmapped-file
+  (pointer (cffi:null-pointer))
+  (size 0 :type fixnum)
+  (offset 0 :type fixnum))
 
-(defun munmap-file (pointer-to-mmap-file file-size)
-  "Removes a mapping at the address (with the range of FILE-SIZE) that
-the POINTER-TO-MMAP-FILE pointer points to from memory."
-  (osicat-posix:munmap pointer-to-mmap-file file-size))
+(defun mmap-file (filename)
+  (multiple-value-bind (pointer file-size) (%mmap-file filename)
+    (make-mmapped-file :pointer pointer :size file-size)))
 
-(declaim (ftype (function (sb-sys:system-area-pointer fixnum) base-char) mmap-read-char))
-(defun mmap-read-char (pointer-to-mmap-file offset)
-  "Reads and returns a character from a memory-mapped file pointed to
-by the POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
-  (code-char (cffi:mem-aref (cffi:inc-pointer pointer-to-mmap-file offset) :char)))
+(defun munmap-file (mmapped-file)
+  (with-accessors ((pointer mmapped-file-pointer) (offset mmapped-file-offset)) mmapped-file
+    (%munmap-file pointer offset)))
 
-(declaim (ftype (function (sb-sys:system-area-pointer fixnum) (unsigned-byte 8)) mmap-read-byte))
-(defun mmap-read-byte (pointer-to-mmap-file offset)
-  "Reads and returns one byte from a memory-mapped file pointed to by
-the POINTER-TO-MMAP-FILE pointer, offset by OFFSET bytes."
-  (cffi:mem-aref (cffi:inc-pointer pointer-to-mmap-file offset) :uint8))
+(defun mmap-read-byte (mmapped-file &optional eof-value)
+  (with-accessors ((pointer mmapped-file-pointer)
+                   (offset mmapped-file-offset)
+                   (file-size mmapped-file-size)) mmapped-file
+    (if (< offset file-size)
+        (prog1
+          (%mmap-read-byte pointer offset)
+          (incf offset))
+        eof-value)))
 
-(defmacro with-mmap-file ((pointer-to-mmap-file
-                           file-size filename
-                           &key file-length (mapping-type :map-private) (offset 0))
-                          &body body)
-  "Uses MMAP-FILE to maps a FILENAME into memory.
+(defun mmap-read-char (mmapped-file &optional eof-value)
+  (with-accessors ((pointer mmapped-file-pointer)
+                   (offset mmapped-file-offset)
+                   (file-size mmapped-file-size)) mmapped-file
+    (if (< offset file-size)
+        (prog1
+          (%mmap-read-char pointer offset)
+          (incf offset))
+        eof-value)))
 
-POINTER-TO-MMAP-FILE and FILE-SIZE are bound to values that MMAP-FILE
-returns after we apply it to FILENAME."
-  (alexandria:with-gensyms (orig-ptr orig-size)
-    `(multiple-value-bind (,pointer-to-mmap-file ,file-size)
-         (mmap-file ,filename :file-length ,file-length :mapping-type ,mapping-type :offset ,offset)
-       (let ((,orig-ptr ,pointer-to-mmap-file)
-             (,orig-size ,file-size))
-         (unwind-protect
-              (progn ,@body)
-           (munmap-file ,orig-ptr ,orig-size))))))
+(defmacro with-mmap-file ((mmapped-file filename) &body body)
+  `(let ((,mmapped-file ,(mmap-file filename)))
+     (unwind-protect
+          (progn ,@body)
+       (munmap-file ,mmapped-file))))

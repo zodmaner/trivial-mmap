@@ -8,5 +8,6 @@
                #:osicat)
   :serial t
   :components ((:file "package")
+               (:file "low-level-interface")
                (:file "trivial-mmap")))
 
