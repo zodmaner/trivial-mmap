@@ -43,9 +43,10 @@ X230 (Ivy Bridge) with 8 GB of RAM and an SSD). For comparison,
 reading the same file using `with-open-file` and `read-char` takes
 around 14 seconds of real time on the same machine.
 
-## Dependency
+## Dependencies
 
-* **osicat**
+* [alexandria](https://common-lisp.net/project/alexandria/)
+* [Osicat](https://common-lisp.net/project/osicat/)
 
 ## Limitations
 
