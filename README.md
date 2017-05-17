@@ -45,7 +45,7 @@ around 14 seconds of real time on the same machine.
 
 ## Dependencies
 
-* [alexandria](https://common-lisp.net/project/alexandria/)
+* [Alexandria](https://common-lisp.net/project/alexandria/)
 * [Osicat](https://common-lisp.net/project/osicat/)
 
 ## Limitations
