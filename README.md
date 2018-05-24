@@ -27,9 +27,8 @@ from a file containing Twitter social graph (780 MB uncompressed).
 ````lisp
 CL-USER> (time
           (trivial-mmap:with-mmap-file (ptr size "/home/zodmaner/twitter_rv_15066953.net")
-            (loop
-               :for offset :from 0 :to (1- size) :do
-               (characterp (trivial-mmap:mmap-read-char ptr offset)))))
+            (loop :for offset :below size :do
+              (assert (characterp (trivial-mmap:mmap-read-char ptr offset))))))
 Evaluation took:
   3.400 seconds of real time
   3.400000 seconds of total run time (3.360000 user, 0.040000 system)
@@ -50,7 +49,8 @@ around 14 seconds of real time on the same machine.
 
 ## Limitations
 
-* Currently, the library only supports reading data from memory-mapped files.
+* Currently the library only supports reading data from memory-mapped files.
+* The library only supports Linux. It may work on MacOS, but definitely not on Windows.
 
 ## Author & Maintainer
 
