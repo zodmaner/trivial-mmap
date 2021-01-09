@@ -17,8 +17,8 @@
     (make-mmapped-file :pointer pointer :size file-size)))
 
 (defun munmap-file (mmapped-file)
-  (with-accessors ((pointer mmapped-file-pointer) (offset mmapped-file-offset)) mmapped-file
-    (%munmap-file pointer offset)))
+  (with-accessors ((pointer mmapped-file-pointer) (size mmapped-file-size)) mmapped-file
+    (%munmap-file pointer size)))
 
 (defun mmap-read-byte (mmapped-file &optional eof-value)
   (with-accessors ((pointer mmapped-file-pointer)
