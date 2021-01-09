@@ -6,5 +6,8 @@
            #:munmap-file
            #:mmap-read-char
            #:mmap-read-byte
+           #:mmapped-file-p
+           #:mmapped-file-pointer
+           #:mmapped-file-size
+           #:mmapped-file-offset
            #:with-mmap-file))
-
